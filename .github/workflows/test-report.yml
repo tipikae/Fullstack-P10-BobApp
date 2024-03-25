@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Generate front report
-        uses: phoenix-actions/test-reporting@v9
+        uses: phoenix-actions/test-reporting@v8
         id: front-tests-report
         with:
           artifact: front-tests-results
