@@ -44,4 +44,4 @@ jobs:
         if: success() || failure()
         with:
           name: front-tests-results
-          path: coverage/bobapp/code-coverage.xml
+          path: front/coverage/bobapp/code-coverage.xml
