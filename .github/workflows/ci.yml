@@ -1,4 +1,4 @@
-name: BobApp application workflow
+name: 'CI'
 
 on:
   pull_request:
@@ -39,3 +39,9 @@ jobs:
         run: npm ci
       - name: Run tests
         run: npm run test:ci
+      - name: Upload front tests result
+        uses: actions/upload-artifact@v4
+        if: success() || failure()
+        with:
+          name: front-tests-results
+          path: coverage/bobapp/code-coverage.xml
