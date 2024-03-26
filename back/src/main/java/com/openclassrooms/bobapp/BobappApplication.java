@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 /**
  * BobApp application main class.
  * @version 1.0
+ * @author tipikae
  */
 @SpringBootApplication
 public class BobappApplication {

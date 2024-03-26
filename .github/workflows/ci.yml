@@ -22,14 +22,12 @@ jobs:
         run: mvn install
       - name: Run tests
         run: mvn verify
-      - name: Back test report
-        uses: phoenix-actions/test-reporting@v9
-        id: back-test-report
+      - name: Upload back tests result
+        uses: actions/upload-artifact@v3
         if: success() || failure()
         with:
-          name: Java Tests
+          name: back-tests-results
           path: back/target/site/jacoco/jacoco.xml
-          reporter: java-junit
 
   frontend-build:
     runs-on: ubuntu-latest
@@ -47,11 +45,9 @@ jobs:
         run: npm ci
       - name: Run tests
         run: npm run test:ci
-      - name: Front test report
-        uses: phoenix-actions/test-reporting@v9
-        id: front-test-report
+      - name: Upload front tests result
+        uses: actions/upload-artifact@v3
         if: success() || failure()
         with:
-          name: JEST Tests
+          name: front-tests-results
           path: front/coverage/bobapp/code-coverage.xml
-          reporter: jest-junit
