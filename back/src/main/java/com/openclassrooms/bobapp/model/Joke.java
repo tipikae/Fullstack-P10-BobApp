@@ -4,6 +4,10 @@ package com.openclassrooms.bobapp.model;
  * Joke model class.
  */
 public class Joke {
+
+    /**
+     * Joke text.
+     */
     public String joke;
     public String response;
 
