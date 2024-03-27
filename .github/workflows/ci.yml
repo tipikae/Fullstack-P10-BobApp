@@ -22,12 +22,14 @@ jobs:
         run: mvn install
       - name: Run tests
         run: mvn verify
-      - name: Upload back tests result
-        uses: actions/upload-artifact@v3
-        if: success() || failure()
+      - name: Jacoco report
+        id: jacoco_reporter
+        uses: PavanMudigonda/jacoco-reporter@v5.0
         with:
-          name: back-tests-results
-          path: back/target/site/jacoco/jacoco.xml
+          coverage_results_path: back/target/site/jacoco/jacoco.xml
+          coverage_report_name: Coverage
+          coverage_report_title: JaCoCo
+          publish_only_summary: true
 
   frontend-build:
     runs-on: ubuntu-latest
@@ -45,9 +47,3 @@ jobs:
         run: npm ci
       - name: Run tests
         run: npm run test:ci
-      - name: Upload front tests result
-        uses: actions/upload-artifact@v3
-        if: success() || failure()
-        with:
-          name: front-tests-results
-          path: front/coverage/bobapp/code-coverage.xml
