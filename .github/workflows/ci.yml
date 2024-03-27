@@ -25,14 +25,16 @@ jobs:
         run: mvn install
       - name: Run tests
         run: mvn verify
-      - name: Jacoco report
-        id: jacoco_reporter
-        uses: PavanMudigonda/jacoco-reporter@v5.0
+      - name: Add coverage to PR
+        id: jacoco
+        uses: madrapps/jacoco-report@v1.6.1
         with:
-          coverage_results_path: back/target/site/jacoco/jacoco.xml
-          coverage_report_name: Coverage
-          coverage_report_title: JaCoCo
-          publish_only_summary: true
+          paths: back/target/site/jacoco/jacoco.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 80
+          min-coverage-changed-files: 60
+          title: Back-end Code Coverage
+          update-comment: true
 
   frontend-build:
     runs-on: ubuntu-latest
