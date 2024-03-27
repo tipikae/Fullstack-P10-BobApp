@@ -14,6 +14,9 @@ public class Joke {
      */
     public String response;
 
+    /**
+     * Constructor.
+     */
     public Joke() {
     }
 
