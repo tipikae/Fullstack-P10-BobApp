@@ -15,6 +15,9 @@ export class JokesService {
 
   private subject: BehaviorSubject<Joke | null> = new BehaviorSubject<Joke | null>(null);
 
+  /**
+   Constructor.
+   */
   constructor(private httpClient: HttpClient) {
     this.getRandomJoke();
   }
