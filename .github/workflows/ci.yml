@@ -24,7 +24,7 @@ jobs:
         run: mvn install
       - name: Run tests
         run: mvn verify
-      - name: Add coverage to PR
+      - name: Add back-end coverage to PR
         id: jacoco
         uses: madrapps/jacoco-report@v1.6.1
         with:
@@ -34,6 +34,8 @@ jobs:
           min-coverage-changed-files: 60
           title: Back-end Code Coverage
           update-comment: true
+          pass-emoji: ':green_circle:'
+          fail-emoji: ':red_circle:'
 
   frontend-build:
     runs-on: ubuntu-latest
@@ -51,3 +53,9 @@ jobs:
         run: npm ci
       - name: Run tests
         run: npm run test:ci
+      - name: Add front-end coverage to PR
+        uses: AthleticNet/comment-test-coverage@1.1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          path: coverage/coverage-summary.json
+          title: Front-end Test Coverage
