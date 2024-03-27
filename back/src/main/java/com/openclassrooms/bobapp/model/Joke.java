@@ -9,6 +9,9 @@ public class Joke {
      * Joke text.
      */
     public String joke;
+    /**
+     * Response text.
+     */
     public String response;
 
     public Joke() {
