@@ -22,6 +22,9 @@ export class JokesService {
     this.getRandomJoke();
   }
 
+  /**
+   Get a joke randomly.
+   */
   public getRandomJoke(): void {
     this.httpClient.get<Joke>(this.pathService).subscribe((joke: Joke) => this.subject.next(joke));
   }

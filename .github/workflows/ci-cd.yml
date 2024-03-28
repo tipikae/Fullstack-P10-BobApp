@@ -1,11 +1,11 @@
-name: 'CI'
+name: 'CI-CD'
 
 on:
   pull_request:
     branches: [main]
 
 jobs:
-  backend-build:
+  backend-build-test:
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
@@ -37,7 +37,7 @@ jobs:
           pass-emoji: ':green_circle:'
           fail-emoji: ':red_circle:'
 
-  frontend-build:
+  frontend-build-test:
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
