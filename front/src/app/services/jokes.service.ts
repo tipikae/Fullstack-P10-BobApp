@@ -29,6 +29,9 @@ export class JokesService {
     this.httpClient.get<Joke>(this.pathService).subscribe((joke: Joke) => this.subject.next(joke));
   }
 
+ /**
+  Get joke as observable.
+  */
   public joke$(): Observable<Joke | null > {
     return this.subject.asObservable();
   }
