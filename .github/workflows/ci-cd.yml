@@ -6,6 +6,7 @@ on:
 
 jobs:
   backend-build-test:
+    name: Back-end build and test
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
@@ -36,8 +37,10 @@ jobs:
           update-comment: true
           pass-emoji: ':green_circle:'
           fail-emoji: ':red_circle:'
+      # must fail if minimum not reached
 
   frontend-build-test:
+    name: Front-end build and test
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
@@ -72,3 +75,26 @@ jobs:
         with:
           recreate: true
           path: code-coverage-results.md
+      # must fail if minimum not reached
+
+  frontend-quality:
+    name: Front-end code quality
+    runs-on: ubuntu-latest
+    permissions: read-all
+    defaults:
+      run:
+        working-directory: front
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Scan with SonarQube
+        uses: sonarsource/sonarqube-scan-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        # If you wish to fail your job when the Quality Gate is red, uncomment the
+        # following lines. This would typically be used to fail a deployment.
+        # - uses: sonarsource/sonarqube-quality-gate-action@master
+        #   timeout-minutes: 5
+        #   env:
+        #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
