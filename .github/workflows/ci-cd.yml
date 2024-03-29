@@ -137,12 +137,12 @@ jobs:
       - name: Back-end build and push
         uses: docker/build-push-action@v5
         with:
-          context: ./back
+          context: back
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/bobapp:backend
       - name: Front-end build and push
         uses: docker/build-push-action@v5
         with:
-          context: ./front
+          context: front
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/bobapp:frontend
