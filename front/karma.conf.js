@@ -34,7 +34,8 @@ module.exports = function (config) {
         {
           type: 'cobertura',
           file: 'code-coverage.xml'
-        }
+        },
+        { type: 'lcov' }
       ]
     },
     reporters: ['progress', 'kjhtml', 'coverage'],
