@@ -77,18 +77,25 @@ jobs:
           path: code-coverage-results.md
       # must fail if minimum is not reached
 
-#  backend-quality:
-#    name: Back-end code quality
+#  quality:
+#    name: Code quality
+#    needs: [backend-build-test, frontend-build-test]
 #    runs-on: ubuntu-latest
 #    permissions: read-all
-#    defaults:
-#      run:
-#        working-directory: back
 #    steps:
 #      - name: Checkout
 #        uses: actions/checkout@v4
-#      - name: Scan with SonarQube
+#      - name: Back-end scanner
 #        uses: sonarsource/sonarqube-scan-action@master
+#        with:
+#          projectBaseDir: back
+#        env:
+#          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACK }}
+#          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+#      - name: Front-end scanner
+#        uses: sonarsource/sonarqube-scan-action@master
+#        with:
+#          projectBaseDir: front
 #        env:
 #          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACK }}
 #          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
@@ -99,30 +106,10 @@ jobs:
 #   env:
 #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACK }}
 
-#  frontend-quality:
-#    name: Front-end code quality
-#    runs-on: ubuntu-latest
-#    permissions: read-all
-#    defaults:
-#      run:
-#        working-directory: front
-#    steps:
-#      - name: Checkout
-#        uses: actions/checkout@v4
-#      - name: Scan with SonarQube
-#        uses: sonarsource/sonarqube-scan-action@master
-#        env:
-#          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FRONT }}
-#          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        # If you wish to fail your job when the Quality Gate is red, uncomment the
-        # following lines. This would typically be used to fail a deployment.
-        # - uses: sonarsource/sonarqube-quality-gate-action@master
-        #   timeout-minutes: 5
-        #   env:
-        #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FRONT }}
-
   deploy:
     name: Deployment
+    needs: [backend-build-test, frontend-build-test]
+#    needs: quality
     runs-on: ubuntu-latest
     steps:
       - name: Set up QEMU
@@ -137,12 +124,14 @@ jobs:
       - name: Back-end build and push
         uses: docker/build-push-action@v5
         with:
-          context: back
+          context: ./back
+          file: ./back/Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/bobapp:backend
       - name: Front-end build and push
         uses: docker/build-push-action@v5
         with:
-          context: front
+          context: ./front
+          file: ./front/Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/bobapp:frontend
