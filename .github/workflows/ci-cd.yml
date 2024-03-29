@@ -37,7 +37,7 @@ jobs:
           update-comment: true
           pass-emoji: ':green_circle:'
           fail-emoji: ':red_circle:'
-      # must fail if minimum not reached
+      # must fail if minimum is not reached
 
   frontend-build-test:
     name: Front-end build and test
@@ -75,26 +75,74 @@ jobs:
         with:
           recreate: true
           path: code-coverage-results.md
-      # must fail if minimum not reached
+      # must fail if minimum is not reached
 
-  frontend-quality:
-    name: Front-end code quality
-    runs-on: ubuntu-latest
-    permissions: read-all
-    defaults:
-      run:
-        working-directory: front
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Scan with SonarQube
-        uses: sonarsource/sonarqube-scan-action@master
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+#  backend-quality:
+#    name: Back-end code quality
+#    runs-on: ubuntu-latest
+#    permissions: read-all
+#    defaults:
+#      run:
+#        working-directory: back
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v4
+#      - name: Scan with SonarQube
+#        uses: sonarsource/sonarqube-scan-action@master
+#        env:
+#          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACK }}
+#          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+# If you wish to fail your job when the Quality Gate is red, uncomment the
+# following lines. This would typically be used to fail a deployment.
+# - uses: sonarsource/sonarqube-quality-gate-action@master
+#   timeout-minutes: 5
+#   env:
+#     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACK }}
+
+#  frontend-quality:
+#    name: Front-end code quality
+#    runs-on: ubuntu-latest
+#    permissions: read-all
+#    defaults:
+#      run:
+#        working-directory: front
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v4
+#      - name: Scan with SonarQube
+#        uses: sonarsource/sonarqube-scan-action@master
+#        env:
+#          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FRONT }}
+#          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         # If you wish to fail your job when the Quality Gate is red, uncomment the
         # following lines. This would typically be used to fail a deployment.
         # - uses: sonarsource/sonarqube-quality-gate-action@master
         #   timeout-minutes: 5
         #   env:
-        #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FRONT }}
+
+  deploy:
+    name: Deployment
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Back-end build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: ./back
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/bobapp:backend
+      - name: Front-end build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: ./front
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/bobapp:frontend
