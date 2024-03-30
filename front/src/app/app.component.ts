@@ -15,6 +15,9 @@ export class AppComponent implements OnInit {
 
   public joke$: Observable<Joke | null> = this.jokesService.joke$();
 
+ /**
+  Constructor.
+  */
   constructor(private jokesService: JokesService) {
   }
 
