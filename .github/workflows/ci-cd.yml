@@ -79,6 +79,8 @@ jobs:
         with:
           recreate: true
           path: code-coverage-results.md
+          message: |
+            Front-end Code Coverage
       # must fail if minimum is not reached
 
   backend-quality:
