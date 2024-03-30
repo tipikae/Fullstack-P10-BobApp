@@ -1,8 +1,12 @@
 name: 'CI-CD'
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
   backend-build-test:
@@ -77,39 +81,65 @@ jobs:
           path: code-coverage-results.md
       # must fail if minimum is not reached
 
-#  quality:
-#    name: Code quality
-#    needs: [backend-build-test, frontend-build-test]
-#    runs-on: ubuntu-latest
-#    permissions: read-all
-#    steps:
-#      - name: Checkout
-#        uses: actions/checkout@v4
-#      - name: Back-end scanner
-#        uses: sonarsource/sonarqube-scan-action@master
-#        with:
-#          projectBaseDir: back
-#        env:
-#          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACK }}
-#          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-#      - name: Front-end scanner
-#        uses: sonarsource/sonarqube-scan-action@master
-#        with:
-#          projectBaseDir: front
-#        env:
-#          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACK }}
-#          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-# If you wish to fail your job when the Quality Gate is red, uncomment the
-# following lines. This would typically be used to fail a deployment.
-# - uses: sonarsource/sonarqube-quality-gate-action@master
-#   timeout-minutes: 5
-#   env:
-#     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACK }}
+  backend-quality:
+    name: Back-end code quality
+    needs: backend-build-test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: back
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: 17
+          distribution: 'zulu' # Alternative distribution options are available.
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+      - name: Build and analyze
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectBaseDir=back
+
+  frontend-quality:
+    name: Front-end code quality
+    needs: frontend-build-test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: front
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        with:
+          projectBaseDir: front
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   deploy:
     name: Deployment
     needs: [backend-build-test, frontend-build-test]
-#    needs: quality
+    #    needs: quality
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
