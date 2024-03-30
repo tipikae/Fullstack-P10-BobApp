@@ -3,6 +3,9 @@ import { Observable } from 'rxjs';
 import { Joke } from './model/joke.model';
 import { JokesService } from './services/jokes.service';
 
+/**
+ Main app component.
+ */
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
