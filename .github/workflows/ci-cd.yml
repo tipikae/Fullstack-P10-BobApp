@@ -138,8 +138,7 @@ jobs:
 
   deploy:
     name: Deployment
-    needs: [backend-build-test, frontend-build-test]
-    #    needs: quality
+    needs: [backend-quality, frontend-quality]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
