@@ -35,7 +35,7 @@ jobs:
       - name: Run tests
         run: mvn verify
       - name: Add back-end coverage to PR
-        id: jacoco
+        id: jacoco1
         uses: madrapps/jacoco-report@v1.6.1
         with:
           paths: back/target/site/jacoco/jacoco.xml
