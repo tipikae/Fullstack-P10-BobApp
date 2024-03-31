@@ -34,18 +34,18 @@ jobs:
         run: mvn install
       - name: Run tests
         run: mvn verify
-#      - name: Add back-end coverage to PR
-#        id: jacoco
-#        uses: madrapps/jacoco-report@v1.6.1
-#        with:
-#          paths: back/target/site/jacoco/jacoco.xml
-#          token: ${{ secrets.GITHUB_TOKEN }}
-#          min-coverage-overall: 80
-#          min-coverage-changed-files: 60
-#          title: Back-end Code Coverage
-#          update-comment: true
-#          pass-emoji: ':green_circle:'
-#          fail-emoji: ':red_circle:'
+      - name: Add back-end coverage to PR
+        id: jacoco
+        uses: madrapps/jacoco-report@v1.6.1
+        with:
+          paths: back/target/site/jacoco/jacoco.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 80
+          min-coverage-changed-files: 60
+          title: Back-end Code Coverage
+          update-comment: true
+          pass-emoji: ':green_circle:'
+          fail-emoji: ':red_circle:'
       - name: Generate JaCoCo badge
         id: jacoco
         uses: cicirello/jacoco-badge-generator@v2
@@ -61,7 +61,7 @@ jobs:
       - name: Upload JaCoCo coverage report as a workflow artifact
         uses: actions/upload-artifact@v3
         with:
-          name: jacoco-report
+          name: backend-jacoco-report
           path: back/target/site/jacoco/
       - name: Commit and push the coverage badges and summary file
         if: ${{ github.event_name != 'pull_request' }}
@@ -116,6 +116,11 @@ jobs:
           indicators: true
           output: both
           thresholds: '60 80'
+      - name: Upload coverage report as a workflow artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: frontend-jacoco-report
+          path: front/coverage/
       - name: Add Front-end Coverage PR to Comment
         uses: marocchino/sticky-pull-request-comment@v2
         if: github.event_name == 'pull_request'
