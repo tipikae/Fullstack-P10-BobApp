@@ -20,6 +20,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Checkout badges branch to a badges directory
+        uses: actions/checkout@v4
+        with:
+          path: badges
       - name: Set up JDK11
         uses: actions/setup-java@v4
         with:
@@ -48,6 +52,7 @@ jobs:
           badges-directory: badges
           generate-branches-badge: true
           generate-summary: true
+          jacoco-csv-file: back/target/site/jacoco/jacoco.csv
       - name: Log coverage percentages to workflow output
         run: |
           echo "coverage = ${{ steps.jacoco.outputs.coverage }}"
