@@ -64,7 +64,7 @@ jobs:
           name: jacoco-report
           path: back/target/site/jacoco/
       - name: Commit and push the coverage badges and summary file
-        if: ${{ github.event_name != 'pull_request' }}
+        #if: ${{ github.event_name != 'pull_request' }}
         run: |
           cd badges
           if [[ `git status --porcelain *.svg *.json` ]]; then
@@ -77,7 +77,7 @@ jobs:
       - name: Comment on PR with coverage percentages
         if: ${{ github.event_name == 'pull_request' }}
         run: |
-          REPORT=$(<back/badges/coverage-summary.json)
+          REPORT=$(<badges/coverage-summary.json)
           COVERAGE=$(jq -r '.coverage' <<< "$REPORT")%
           BRANCHES=$(jq -r '.branches' <<< "$REPORT")%
           NEWLINE=$'\n'
