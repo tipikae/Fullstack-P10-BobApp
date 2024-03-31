@@ -95,7 +95,7 @@ jobs:
       run:
         working-directory: front
     steps:
-      - name: Checkout
+      - name: Checkout repo
         uses: actions/checkout@v4
       - name: Set up Node.js 16.10.0
         uses: actions/setup-node@v4
