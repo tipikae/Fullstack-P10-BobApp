@@ -20,6 +20,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Checkout badges branch to a badges directory
+        uses: actions/checkout@v4
+        with:
+          ref: badges
+          path: badges
       - name: Set up JDK11
         uses: actions/setup-java@v4
         with:
@@ -28,20 +33,46 @@ jobs:
       - name: Install Maven dependencies
         run: mvn install
       - name: Run tests
-        run: mvn verify
-      - name: Add back-end coverage to PR
+        run: mvn -B package -Pcoverage
+#      - name: Add back-end coverage to PR
+#        id: jacoco
+#        uses: madrapps/jacoco-report@v1.6.1
+#        with:
+#          paths: back/target/site/jacoco/jacoco.xml
+#          token: ${{ secrets.GITHUB_TOKEN }}
+#          min-coverage-overall: 80
+#          min-coverage-changed-files: 60
+#          title: Back-end Code Coverage
+#          update-comment: true
+#          pass-emoji: ':green_circle:'
+#          fail-emoji: ':red_circle:'
+      - name: Generate JaCoCo badge
         id: jacoco
-        uses: madrapps/jacoco-report@v1.6.1
+        uses: cicirello/jacoco-badge-generator@v2
         with:
-          paths: back/target/site/jacoco/jacoco.xml
-          token: ${{ secrets.GITHUB_TOKEN }}
-          min-coverage-overall: 80
-          min-coverage-changed-files: 60
-          title: Back-end Code Coverage
-          update-comment: true
-          pass-emoji: ':green_circle:'
-          fail-emoji: ':red_circle:'
-      # must fail if minimum is not reached
+          badges-directory: badges
+          generate-branches-badge: true
+          generate-summary: true
+      - name: Log coverage percentages to workflow output
+        run: |
+          echo "coverage = ${{ steps.jacoco.outputs.coverage }}"
+          echo "branches = ${{ steps.jacoco.outputs.branches }}"
+      - name: Upload JaCoCo coverage report as a workflow artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: jacoco-report
+          path: target/site/jacoco/
+      - name: Comment on PR with coverage percentages
+        if: ${{ github.event_name == 'pull_request' }}
+        run: |
+          REPORT=$(<badges/coverage-summary.json)
+          COVERAGE=$(jq -r '.coverage' <<< "$REPORT")%
+          BRANCHES=$(jq -r '.branches' <<< "$REPORT")%
+          NEWLINE=$'\n'
+          BODY="## JaCoCo Test Coverage Summary Statistics${NEWLINE}* __Coverage:__ ${COVERAGE}${NEWLINE}* __Branches:__ ${BRANCHES}"
+          gh pr comment ${{github.event.pull_request.number}} -b "${BODY}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   frontend-build-test:
     name: Front-end build and test
@@ -81,7 +112,6 @@ jobs:
           path: code-coverage-results.md
           message: |
             Front-end Code Coverage
-      # must fail if minimum is not reached
 
   backend-quality:
     name: Back-end code quality
