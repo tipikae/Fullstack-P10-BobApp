@@ -29,11 +29,6 @@ jobs:
         run: mvn install
       - name: Run tests
         run: mvn verify
-      - name: Upload JaCoCo coverage report as a workflow artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: backend-jacoco-report
-          path: back/target/site/jacoco/
       - name: Add back-end coverage to PR
         id: jacoco1
         uses: madrapps/jacoco-report@v1.6.1
@@ -46,6 +41,11 @@ jobs:
           update-comment: true
           pass-emoji: ':green_circle:'
           fail-emoji: ':red_circle:'
+      - name: Upload JaCoCo coverage report as a workflow artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: backend-jacoco-report
+          path: back/target/site/jacoco/
 
   frontend-build-test:
     name: Front-end build and test
@@ -143,7 +143,7 @@ jobs:
         with:
           projectBaseDir: front
           args: >
-            -Dsonar.javascript.coverage.reportPaths=coverage/code-coverage.xml
+            -Dsonar.javascript.coverage.reportPaths=front/coverage/lcov.info
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FRONT }}
