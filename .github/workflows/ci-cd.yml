@@ -44,7 +44,7 @@ jobs:
           pass-emoji: ':green_circle:'
           fail-emoji: ':red_circle:'
       - name: Upload JaCoCo coverage report as a workflow artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         id: backend-coverage-artifact
         with:
           name: backend-jacoco-report
@@ -85,7 +85,7 @@ jobs:
           output: both
           thresholds: '60 80'
       - name: Upload coverage report as a workflow artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         id: frontend-coverage-artifact
         with:
           name: frontend-coverage-report
