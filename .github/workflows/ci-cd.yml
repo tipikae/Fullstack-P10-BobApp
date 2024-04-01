@@ -49,12 +49,11 @@ jobs:
         with:
           name: backend-jacoco-report
           path: back/target/site/jacoco/
-      - name: Output coverage link
-        run: echo 'Back-end coverage report is available at ${{ steps.backend-coverage-artifact.outputs.artifact-url }}'
       - name: Add output to PR comment
         uses: mshick/add-pr-comment@v2
         if: github.event_name == 'pull_request'
         with:
+          message-id: backend-report-comment
           message: |
             **Back-end coverage report is available at ${{ steps.backend-coverage-artifact.outputs.artifact-url }}**
 
@@ -96,8 +95,6 @@ jobs:
         with:
           name: frontend-coverage-report
           path: front/coverage/
-      - name: Output coverage link
-        run: echo 'Front-end coverage report is available at ${{ steps.frontend-coverage-artifact.outputs.artifact-url }}'
       - name: Add Front-end Coverage PR to Comment
         uses: marocchino/sticky-pull-request-comment@v2
         if: github.event_name == 'pull_request'
@@ -110,6 +107,7 @@ jobs:
         uses: mshick/add-pr-comment@v2
         if: github.event_name == 'pull_request'
         with:
+          message-id: frontend-report-comment
           message: |
             **Front-end coverage report is available at ${{ steps.frontend-coverage-artifact.outputs.artifact-url }}**
 
