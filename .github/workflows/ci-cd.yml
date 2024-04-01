@@ -20,6 +20,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Set up JDK11
         uses: actions/setup-java@v4
         with:
@@ -43,9 +45,12 @@ jobs:
           fail-emoji: ':red_circle:'
       - name: Upload JaCoCo coverage report as a workflow artifact
         uses: actions/upload-artifact@v3
+        id: backend-coverage-artifact
         with:
           name: backend-jacoco-report
           path: back/target/site/jacoco/
+      - name: Output coverage link
+        run: echo'Back-end coverage report is available at ${{ steps.backend-coverage-artifact.outputs.artifact-url }}'
 
   frontend-build-test:
     name: Front-end build and test
@@ -58,6 +63,8 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Set up Node.js 16.10.0
         uses: actions/setup-node@v4
         with:
@@ -79,9 +86,12 @@ jobs:
           thresholds: '60 80'
       - name: Upload coverage report as a workflow artifact
         uses: actions/upload-artifact@v3
+        id: frontend-coverage-artifact
         with:
           name: frontend-coverage-report
           path: front/coverage/
+      - name: Output coverage link
+        run: echo'Front-end coverage report is available at ${{ steps.frontend-coverage-artifact.outputs.artifact-url }}'
       - name: Add Front-end Coverage PR to Comment
         uses: marocchino/sticky-pull-request-comment@v2
         if: github.event_name == 'pull_request'
@@ -102,12 +112,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+          fetch-depth: 0
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           java-version: 17
-          distribution: 'zulu' # Alternative distribution options are available.
+          distribution: 'zulu'
       - name: Cache SonarCloud packages
         uses: actions/cache@v3
         with:
@@ -122,7 +132,7 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
       - name: Build and analyze
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACK }}
         run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
 
@@ -137,7 +147,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+          fetch-depth: 0
       - name: Create coverage directory
         run: |
           mkdir coverage
@@ -150,10 +160,8 @@ jobs:
         uses: SonarSource/sonarcloud-github-action@master
         with:
           projectBaseDir: front
-          args: >
-            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FRONT }}
 
   deploy:
@@ -163,6 +171,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
