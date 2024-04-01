@@ -19,9 +19,6 @@
 		<sonar.projectName>BobApp-back</sonar.projectName>
 		<sonar.organization>tipikae</sonar.organization>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
-		<!--<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
-		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
-		<sonar.language>java</sonar.language>-->
 	</properties>
 	<dependencies>
 		<dependency>
