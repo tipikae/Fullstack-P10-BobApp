@@ -51,6 +51,12 @@ jobs:
           path: back/target/site/jacoco/
       - name: Output coverage link
         run: echo 'Back-end coverage report is available at ${{ steps.backend-coverage-artifact.outputs.artifact-url }}'
+      - name: Add output to PR comment
+        uses: mshick/add-pr-comment@v2
+        if: github.event_name == 'pull_request'
+        with:
+          message: |
+            **Back-end coverage report is available at ${{ steps.backend-coverage-artifact.outputs.artifact-url }}**
 
   frontend-build-test:
     name: Front-end build and test
@@ -100,6 +106,12 @@ jobs:
           path: code-coverage-results.md
           message: |
             Front-end Code Coverage
+      - name: Add output to PR comment
+        uses: mshick/add-pr-comment@v2
+        if: github.event_name == 'pull_request'
+        with:
+          message: |
+            **Front-end coverage report is available at ${{ steps.frontend-coverage-artifact.outputs.artifact-url }}**
 
   backend-quality:
     name: Back-end code quality
@@ -152,7 +164,7 @@ jobs:
         run: |
           mkdir coverage
       - name: Download artifact frontend-coverage-report
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: frontend-coverage-report
           path: front/coverage
