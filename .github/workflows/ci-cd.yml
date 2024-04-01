@@ -151,7 +151,7 @@ jobs:
         with:
           projectBaseDir: front
           args: >
-            -Dsonar.javascript.lcov.reportPaths=front/coverage/lcov.info
+            -Dsonar.javascript.lcov.reportPaths=front/coverage/
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FRONT }}
