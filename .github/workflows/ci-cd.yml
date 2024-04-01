@@ -80,7 +80,7 @@ jobs:
       - name: Upload coverage report as a workflow artifact
         uses: actions/upload-artifact@v3
         with:
-          name: frontend-jacoco-report
+          name: frontend-coverage-report
           path: front/coverage/
       - name: Add Front-end Coverage PR to Comment
         uses: marocchino/sticky-pull-request-comment@v2
@@ -138,12 +138,16 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - name: Download artifact frontend-coverage-report
+        uses: actions/download-artifact@v3
+        with:
+          name: frontend-coverage-report
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         with:
           projectBaseDir: front
           args: >
-            -Dsonar.javascript.lcov.reportPaths=front/coverage/lcov.info
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FRONT }}
