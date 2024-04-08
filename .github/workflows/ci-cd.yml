@@ -206,3 +206,10 @@ jobs:
           file: ./front/Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/bobapp:frontend
+      - name: Add output to PR comment
+        uses: mshick/add-pr-comment@v2
+        if: github.event_name == 'pull_request'
+        with:
+          message-id: deployment
+          message: |
+            **Containers are deployed on Docker Hub at https://hub.docker.com/repository/docker/tipikae/bobapp/general**
