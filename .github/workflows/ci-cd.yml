@@ -39,7 +39,7 @@ jobs:
           paths: back/target/site/jacoco/jacoco.xml
           token: ${{ secrets.GITHUB_TOKEN }}
           min-coverage-overall: 80
-          min-coverage-changed-files: 60
+          min-coverage-changed-files: 70
           title: Back-end Code Coverage
           update-comment: false
           pass-emoji: ':green_circle:'
@@ -89,7 +89,7 @@ jobs:
           hide_complexity: true
           indicators: true
           output: both
-          thresholds: '60 80'
+          thresholds: '70 80'
       - name: Upload coverage report as a workflow artifact
         uses: actions/upload-artifact@v4
         id: frontend-coverage-artifact
